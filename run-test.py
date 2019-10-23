@@ -38,9 +38,11 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 	try:
 		amount = 0
-		while (amount<numberOfEpectedMessages):
+		topicNotEmpty = true
+		while (amount<numberOfEpectedMessages or topicNotEmpty):
 			msg = c.poll(0.1)
 			if msg is None:
+				topicNotEmpty = false
 				continue
 			elif not msg.error():
 				amount += 1
