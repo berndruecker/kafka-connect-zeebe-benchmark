@@ -89,7 +89,7 @@ def waitForWorkflowsToBeFinished():
 	while (number > 0):
 		amount = numberOfWorkflowsFinished();
 
-number = 10
+number = 1
 payload = "1"
 
 print( "## Start Workflow Instances" )
