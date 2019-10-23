@@ -38,11 +38,11 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 	c.subscribe(['pong'])
 
 	try:
-		topicNotEmpty = true
+		topicNotEmpty = True
 		while (amount<numberOfEpectedMessages or topicNotEmpty):
 			msg = c.poll(0.1)
 			if msg is None:
-				topicNotEmpty = false
+				topicNotEmpty = False
 				continue
 			elif not msg.error():
 				amount += 1
@@ -68,16 +68,16 @@ print( "## Start Workflow Instances" )
 start = time.clock()
 startWorkflowInstances(number)
 end = time.clock()
-print( "Started "+str(number)+" workflow instances: " + str((end - start) * 1000) + ' milliseconds' );
+print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' milliseconds' );
 
 print( "## Start Kafka Connect Source" )
 start = time.clock()
 startKafkaConnectSource()
 end = time.clock()
-print( "Started Source: " + str((end - start) * 1000) + ' milliseconds' );
+print( "Started Source: " + str((end - start) * 10000) + ' milliseconds' );
 
 print( "## Start Kafka Consumer to Check for Messages" )
 start = time.clock()
 waitForRecordsToArrive(number)
 end = time.clock()
-print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 1000) + ' milliseconds' );
+print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
