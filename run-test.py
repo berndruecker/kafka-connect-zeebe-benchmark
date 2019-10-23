@@ -70,12 +70,24 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 		c.close()
 		print("Received "+ str(amount) + " records on Kafka")
 
-def waitForWorkflowsToBeFinished(numberOfEpectedMessages):
+def numberOfWorkflowsFinished():
 	es = Elasticsearch()
 	res = es.count(
-		index="zeebe-record-workflow-instance")
-	print("Got " + str(res['count']))
+		index="zeebe-record-workflow-instance",
+		body="intent:'ELEMENT_COMPLETED' AND value.bpmnElementType:'PROCESS')")
+	completedAmount = res['count']
 
+	res = es.count(
+		index="zeebe-record-workflow-instance",
+		body="intent:'ELEMENT_ACTIVATING' AND value.bpmnElementType:'PROCESS')")
+	startedAmount = res['count']
+	runningAmount = startedAmount - completedAmount;
+	print("Started " + str(startedAmount) + " and completed " + completedAmount + " workflow instances = " + runningAmount)
+
+def waitForWorkflowsToBeFinished():
+	amount = numberOfWorkflowsFinished();
+	while (number > 0):
+		amount = numberOfWorkflowsFinished();
 
 number = 10
 payload = "1"
@@ -104,4 +116,4 @@ startKafkaConnectSink()
 end = time.clock()
 print( "Started Sink: " + str((end - start) * 10000) + ' milliseconds' );
 
-waitForWorkflowsToBeFinished(number)
+waitForWorkflowsToBeFinished()
