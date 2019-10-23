@@ -4,6 +4,7 @@ import grpc
 import time
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
+from elasticsearch import Elasticsearch
 
 def startWorkflowInstances(numberOfInstances):
 	with grpc.insecure_channel("localhost:26500") as channel:
@@ -17,6 +18,9 @@ def startKafkaConnectSource():
 	headers = {'Content-type': 'application/json'}
 	response = requests.post('http://localhost:8083/connectors', data=contents, headers=headers)
 	print "Kafka Connect response: " + str( response )
+
+def deleteKafkaConnectSource():
+	print "todo"
 
 def startKafkaConnectSink():
 	contents = open('sink.json', 'rb').read()
@@ -46,7 +50,7 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 				continue
 			elif not msg.error():
 				amount += 1
-#				print('Received {1}. message: {0}'.format(msg.value(), amount))
+				topicNotEmpty = True
 
 			elif msg.error().code() == KafkaError._PARTITION_EOF:
 				print('End of partition reached {0}/{1}'
@@ -61,8 +65,14 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 		c.close()
 		print("Received "+ str(amount) + " records on Kafka")
 
+def waitForWorkflowsToBeFinished(numberOfEpectedMessages):
+	es = Elasticsearch()
+	res = es.count(
+		index="zeebe-record-workflow-instance")
+	print("Got %d Hits:" % res)
 
-number = 10000
+
+number = 10
 
 print( "## Start Workflow Instances" )
 start = time.clock()
@@ -81,3 +91,11 @@ start = time.clock()
 waitForRecordsToArrive(number)
 end = time.clock()
 print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
+
+print( "## Start Kafka Connect Source" )
+start = time.clock()
+startKafkaConnectSink()
+end = time.clock()
+print( "Started Sink: " + str((end - start) * 10000) + ' milliseconds' );
+
+waitForWorkflowsToBeFinished(number)

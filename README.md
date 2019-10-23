@@ -58,4 +58,5 @@ You need this:
 ```
 pip install zeebe-grpc
 pip install confluent-kafka
+pip install elasticsearch
 ```
