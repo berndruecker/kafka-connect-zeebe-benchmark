@@ -31,41 +31,24 @@ Of course you can customize the Docker Compose file to your needs. This Docker C
 - [CP Docker Images](https://github.com/zeebe-io/zeebe-docker-compose)
 
 
-# Use Ping Pong Example
+# Run Ping Pong Example
 
 See https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples/ping-pong
 
-#### Deploy workflow 
+## Deploy workflow 
 
 ```shell
-docker-compose -f docker/docker-compose.yml exec zeebe \
-  zbctl create instance --variables "{\"name\": \"pong\", \"payload\": { \"foo\": \"bar\"}, \"key\": 1}" ping-pong
+zbctl --insecure deploy process.bpmn
 ```
 
-#### Deploy connectors
-
-If `curl` is not available, you can also use [Control Center](http://localhost:9021) to create the connectors.
-Make sure to configure them according to the following properties: [source connector properties](source.json), [sink connector properties](sink.json)
-
-Now create the source connector:
-
-```shell
-curl -X POST -H "Content-Type: application/json" --data @examples/ping-pong/source.json http://localhost:8083
-```
-
-Next, create the sink connector:
+## Use Test script
 
 ```
-curl -X POST -H "Content-Type: application/json" --data @examples/ping-pong/source.json http://localhost:8083
+python run-tests.py
 ```
 
-#### Create a workflow instance
+This:
 
-We can now create a workflow instance:
-
-```shell
-docker-compose -f docker/docker-compose.yml exec zeebe \
-	zbctl create instance --variables "{\"name\": \"pong\", \"payload\": { \"foo\": \"bar\"}, \"key\": 1}" ping-pong
-```
-
-Replace the value of the key variable to change the correlation key.
+* Starts workflows
+* Starts the Source Connector
+* Wait for all messages to arrive in the Kafka Topic
