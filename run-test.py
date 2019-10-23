@@ -74,13 +74,14 @@ def numberOfWorkflowsFinished():
 	es = Elasticsearch()
 	res = es.count(
 		index="zeebe-record-workflow-instance",
-		body="intent:'ELEMENT_COMPLETED' AND value.bpmnElementType:'PROCESS')")
+		body="intent:\"ELEMENT_COMPLETED\" AND value.bpmnElementType:\"PROCESS\")")
 	completedAmount = res['count']
 
 	res = es.count(
 		index="zeebe-record-workflow-instance",
-		body="intent:'ELEMENT_ACTIVATING' AND value.bpmnElementType:'PROCESS')")
+		body="intent:\"ELEMENT_ACTIVATING\" AND value.bpmnElementType:\"PROCESS\")")
 	startedAmount = res['count']
+	
 	runningAmount = startedAmount - completedAmount;
 	print("Started " + str(startedAmount) + " and completed " + completedAmount + " workflow instances = " + runningAmount)
 
