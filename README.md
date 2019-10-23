@@ -52,3 +52,10 @@ This:
 * Starts workflows
 * Starts the Source Connector
 * Wait for all messages to arrive in the Kafka Topic
+
+You need this:
+
+```
+pip install zeebe-grpc
+pip install confluent-kafka
+```

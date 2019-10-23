@@ -64,7 +64,7 @@ print( "## Start Workflow Instances" )
 start = time.clock()
 startWorkflowInstances(number)
 end = time.clock()
-print( "Started "+number+" workflow instances: " + str((end - start) * 1000) + ' milliseconds' );
+print( "Started "+str(number)+" workflow instances: " + str((end - start) * 1000) + ' milliseconds' );
 
 print( "## Start Kafka Connect Source" )
 start = time.clock()
@@ -76,4 +76,4 @@ print( "## Start Kafka Consumer to Check for Messages" )
 start = time.clock()
 waitForRecordsToArrive(number)
 end = time.clock()
-print( number + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 1000) + ' milliseconds' );
+print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 1000) + ' milliseconds' );
