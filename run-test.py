@@ -16,7 +16,7 @@ def startKafkaConnectSource():
 	contents = open('source.json', 'rb').read()
 	headers = {'Content-type': 'application/json'}
 	response = requests.post('http://localhost:8083/connectors', data=contents, headers=headers)
-	print "Kafka Connect response: " + response
+	print "Kafka Connect response: " + str( response )
 
 def startKafkaConnectSink():
 	contents = open('sink.json', 'rb').read()
