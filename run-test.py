@@ -25,6 +25,7 @@ def startKafkaConnectSink():
 	print "Kafka Connect response: " + str( response )
 
 def waitForRecordsToArrive(numberOfEpectedMessages):
+	amount = 0
 	settings = {
 		'bootstrap.servers': 'localhost:9092',
 		'group.id': 'mygroup',
@@ -37,7 +38,6 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 	c.subscribe(['pong'])
 
 	try:
-		amount = 0
 		topicNotEmpty = true
 		while (amount<numberOfEpectedMessages or topicNotEmpty):
 			msg = c.poll(0.1)
@@ -59,6 +59,8 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 	finally:
 		c.close()
+		print("Received "+ str(amount) + " records on Kafka")
+
 
 number = 10000
 
