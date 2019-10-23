@@ -7,8 +7,8 @@ from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
 from elasticsearch import Elasticsearch
 
-def startWorkflowInstances(numberOfInstances):
-	file = open('payloads/payload1.json', 'r')
+def startWorkflowInstances(numberOfInstances, payload):
+	file = open('payloads/payload-'+payload+'.json', 'r')
 	payload = file.read()
 	with grpc.insecure_channel("localhost:26500") as channel:
 		stub = gateway_pb2_grpc.GatewayStub(channel)
@@ -16,7 +16,7 @@ def startWorkflowInstances(numberOfInstances):
 			stub.CreateWorkflowInstance(gateway_pb2.CreateWorkflowInstanceRequest(
 				bpmnProcessId = 'ping-pong', 
 				version = -1, 
-				variables = payload..replace('RANDOM', uuid.uuid1())))	
+				variables = payload.replace('RANDOM', str(uuid.uuid1()))))
 
 def startKafkaConnectSource():
 	contents = open('source.json', 'rb').read()
@@ -78,10 +78,11 @@ def waitForWorkflowsToBeFinished(numberOfEpectedMessages):
 
 
 number = 10
+payload = "1"
 
 print( "## Start Workflow Instances" )
 start = time.clock()
-startWorkflowInstances(number)
+startWorkflowInstances(number, payload)
 end = time.clock()
 print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' milliseconds' );
 
