@@ -86,7 +86,7 @@ def numberOfWorkflowsRunning():
 
 def waitForWorkflowsToBeFinished():
 	amount = numberOfWorkflowsRunning();
-	while (aount > 0):
+	while (amount > 0):
 		amount = numberOfWorkflowsRunning();
 
 number = 1
