@@ -106,6 +106,9 @@ else:
 	payload = "1"
 
 print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
+# Cleanup (to make sure it is not running)
+deleteKafkaConnectSource()
+deleteKafkaConnectSink()
 
 print( "## Start Workflow Instances ")
 start = timer()
