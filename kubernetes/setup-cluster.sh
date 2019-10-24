@@ -16,6 +16,6 @@ do
 	sleep 1
 done
 
-kubectl apply -f grafana.yaml
-kubectl apply -f ssd-storageclass.yaml
-kubectl apply -f service-monitor.yaml
+kubectl apply -f k8s-grafana.yaml
+kubectl apply -f k8s-ssd-storageclass.yaml
+kubectl apply -f k8s-service-monitor.yaml
