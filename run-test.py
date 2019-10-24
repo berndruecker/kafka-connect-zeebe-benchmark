@@ -3,11 +3,13 @@ import json
 import grpc
 import time
 import uuid 
+import sys
 from timeit import default_timer as timer
 from datetime import timedelta
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
 from prometheus_client.parser import text_string_to_metric_families
+
 
 def startWorkflowInstances(numberOfInstances, payload):
 	file = open('payloads/payload-'+payload+'.json', 'r')
@@ -96,10 +98,14 @@ def waitForJobsToBeFinished():
 	while (numberOfJobsPending > 0):
 		numberOfJobsPending = getMetricValue("zeebe_pending_jobs_total");
 
-number = 1
-payload = "1"
+if (len(sys.argv[0])==2):
+	number = int(sys.argv[0])
+	payload = str(sys.argv[1])
+else:
+	number = 1
+	payload = "1"
 
-print( "####### Number of instances: " + str(number) + ", payload: " + payload)
+print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
 
 print( "## Start Workflow Instances ")
 start = timer()
