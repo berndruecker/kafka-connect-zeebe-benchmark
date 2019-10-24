@@ -98,9 +98,9 @@ def waitForJobsToBeFinished():
 	while (numberOfJobsPending > 0):
 		numberOfJobsPending = getMetricValue("zeebe_pending_jobs_total");
 
-if (len(sys.argv[0])==2):
-	number = int(sys.argv[0])
-	payload = str(sys.argv[1])
+if (len(sys.argv)==3):
+	number = int(sys.argv[1])
+	payload = str(sys.argv[2])
 else:
 	number = 1
 	payload = "1"
