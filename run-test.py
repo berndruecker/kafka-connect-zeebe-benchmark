@@ -25,13 +25,18 @@ def startKafkaConnectSource():
 	print "Kafka Connect response: " + str( response )
 
 def deleteKafkaConnectSource():
-	print "todo"
+	response = requests.delete('http://localhost:8083/connectors/ping')
+	print "Kafka Connect delete response: " + str( response )
 
 def startKafkaConnectSink():
 	contents = open('sink.json', 'rb').read()
 	headers = {'Content-type': 'application/json'}
 	response = requests.post('http://localhost:8083/connectors', data=contents, headers=headers)
 	print "Kafka Connect response: " + str( response )
+
+def deleteKafkaConnectSink():
+	response = requests.delete('http://localhost:8083/connectors/pong')
+	print "Kafka Connect delete response: " + str( response )
 
 def waitForRecordsToArrive(numberOfEpectedMessages):
 	amount = 0
@@ -76,13 +81,12 @@ def numberOfWorkflowsRunning():
 		for sample in family.samples:
 			if (sample[0]=="zeebe_running_workflow_instances_total"):
 				runningWorkflows = sample[2]
-				print ("Running: " + str(runningWorkflows))
+#				print ("Running workflow instances: " + str(runningWorkflows))
 				return runningWorkflows
-			#print("Name: {0} Labels: {1} Value: {2}".format(*sample))
 
 def waitForWorkflowsToBeFinished():
 	amount = numberOfWorkflowsRunning();
-	while (number > 0):
+	while (aount > 0):
 		amount = numberOfWorkflowsRunning();
 
 number = 1
@@ -94,11 +98,13 @@ startWorkflowInstances(number, payload)
 end = time.clock()
 print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' milliseconds' );
 
+
 print( "## Start Kafka Connect Source" )
 start = time.clock()
 startKafkaConnectSource()
 end = time.clock()
 print( "Started Source: " + str((end - start) * 10000) + ' milliseconds' );
+
 
 print( "## Start Kafka Consumer to Check for Messages" )
 start = time.clock()
@@ -106,10 +112,21 @@ waitForRecordsToArrive(number)
 end = time.clock()
 print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
 
-print( "## Start Kafka Connect Source" )
+
+print( "## Stop Kafka Connect Source" )
+deleteKafkaConnectSource()
+
+
+print( "## Start Kafka Connect Sink" )
 start = time.clock()
 startKafkaConnectSink()
 end = time.clock()
 print( "Started Sink: " + str((end - start) * 10000) + ' milliseconds' );
 
+
+print( "## Wait for workflows to be finished" )
 waitForWorkflowsToBeFinished()
+
+
+print( "## Stop Kafka Connect Sink" )
+deleteKafkaConnectSink()
