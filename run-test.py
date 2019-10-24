@@ -2,6 +2,7 @@ import requests
 import json
 import grpc
 import time
+import timeit
 import uuid 
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
@@ -97,44 +98,26 @@ def waitForJobsToBeFinished():
 number = 1
 payload = "1"
 
-print( "## Start Workflow Instances" )
-start = time.clock()
-startWorkflowInstances(number, payload)
-end = time.clock()
-print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' seconds' );
-
+print( "## Start Workflow Instances ")
+print(timeit.timeit("startWorkflowInstances(number, payload)"))
 
 print( "## Start Kafka Connect Source" )
 startKafkaConnectSource()
 
 print( "## Wait for all jobs in Zeebe to be processed" )
-start = time.clock()
-waitForJobsToBeFinished()
-end = time.clock()
-print( "Jobs processed: " + str((end - start) * 10000) + ' seconds' );
-
+print(timeit.timeit("waitForJobsToBeFinished()"))
 
 print( "## Start Kafka Consumer to Check for Messages" )
-start = time.clock()
-waitForRecordsToArrive(number)
-end = time.clock()
-print( "Records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
-
+print(timeit.timeit("waitForRecordsToArrive(number)"))
 
 print( "## Stop Kafka Connect Source" )
 deleteKafkaConnectSource()
 
-
 print( "## Start Kafka Connect Sink" )
 startKafkaConnectSink()
 
-
 print( "## Wait for workflows to be finished" )
-start = time.clock()
-waitForWorkflowsToBeFinished()
-end = time.clock()
-print( "Workflows finished: " + str((end - start) * 10000) + ' seconds' );
-
+print(timeit.timeit("waitForWorkflowsToBeFinished()"))
 
 print( "## Stop Kafka Connect Sink" )
 deleteKafkaConnectSink()
