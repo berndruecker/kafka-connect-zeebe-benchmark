@@ -59,12 +59,14 @@ You need this to be installed first:
 pip install zeebe-grpc
 pip install confluent-kafka
 pip install elasticsearch
+pip install prometheus_client
 ```
 
 I run this on a Google Compute Engine - reminder for me:
 ```
 ssh -L 9200:localhost:9200 -L 8080:localhost:8080 -L 9021:localhost:9021 -L 8083:localhost:8083 -i ~/gke_key bernd_ruecker_camunda_com@34.89.200.201
 ```
+
 
 ## Test cases & Payloads
 

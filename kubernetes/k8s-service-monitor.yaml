@@ -1,0 +1,16 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: zeebe-monitor
+  labels:
+      release: metrics
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: zeebe
+  endpoints:
+      - honorLabels: true
+        port: monitoring
+        interval: 10s
