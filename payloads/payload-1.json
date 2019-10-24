@@ -1,4 +1,6 @@
 {
     "key": "RANDOM",
-    "messageName": "pong"
+    "messageName": "pong",
+    "someData": "12345678",
+    "moreData": "42"
 }

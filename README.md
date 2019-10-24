@@ -53,7 +53,7 @@ This:
 * Starts the Source Connector
 * Wait for all messages to arrive in the Kafka Topic
 
-You need this:
+You need this to be installed first:
 
 ```
 pip install zeebe-grpc
@@ -61,8 +61,20 @@ pip install confluent-kafka
 pip install elasticsearch
 ```
 
-I run this on a Google Compute ENgine;
+I run this on a Google Compute Engine - reminder for me:
 ```
-ssh -L 9200:localhost:9200 -L 8080:localhost:8080 -L 9021:localhost:9021 -L 8083:localhost:8083 -i ~/gke_key bernd_rueck
-er_camunda_com@34.89.200.201
+ssh -L 9200:localhost:9200 -L 8080:localhost:8080 -L 9021:localhost:9021 -L 8083:localhost:8083 -i ~/gke_key bernd_ruecker_camunda_com@34.89.200.201
 ```
+
+## Test cases & Payloads
+
+* *15k instances, 100 byte message size*
+* 25k instances, 100 byte message size
+* 1M instances, 100 byte message size
+
+* 500 instances, 5kb message size
+* *15k instances, 5kb message size*
+* 20k instances, 5kb message size
+
+* 500 instances, 50kb message
+* 2k instances, 50kb message size
