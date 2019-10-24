@@ -2,8 +2,9 @@ import requests
 import json
 import grpc
 import time
-import timeit
 import uuid 
+from timeit import default_timer as timer
+from datetime import timedelta
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
 from prometheus_client.parser import text_string_to_metric_families
@@ -101,16 +102,22 @@ payload = "1"
 print( "####### Number of instances: " + str(number) + ", payload: " + payload)
 
 print( "## Start Workflow Instances ")
-print(timeit.timeit("startWorkflowInstances(number, payload)"))
+start = timer()
+startWorkflowInstances(number, payload)
+print(timedelta(seconds=timer()-start))
 
 print( "## Start Kafka Connect Source" )
 startKafkaConnectSource()
 
 print( "## Wait for all jobs in Zeebe to be processed" )
-print(timeit.timeit("waitForJobsToBeFinished()"))
+start = timer()
+waitForJobsToBeFinished()
+print(timedelta(seconds=timer()-start))
 
 print( "## Start Kafka Consumer to Check for Messages" )
-print(timeit.timeit("waitForRecordsToArrive(number)"))
+start = timer()
+waitForRecordsToArrive(number)
+print(timedelta(seconds=timer()-start))
 
 print( "## Stop Kafka Connect Source" )
 deleteKafkaConnectSource()
@@ -119,7 +126,9 @@ print( "## Start Kafka Connect Sink" )
 startKafkaConnectSink()
 
 print( "## Wait for workflows to be finished" )
-print(timeit.timeit("waitForWorkflowsToBeFinished()"))
+start = timer()
+waitForWorkflowsToBeFinished()
+print(timedelta(seconds=timer()-start))
 
 print( "## Stop Kafka Connect Sink" )
 deleteKafkaConnectSink()
