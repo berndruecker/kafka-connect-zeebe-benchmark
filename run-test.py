@@ -75,19 +75,24 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 		c.close()
 		print("Received "+ str(amount) + " records on Kafka")
 
-def numberOfWorkflowsRunning():
+def getMetricValue(metricName):
 	metrics = requests.get("http://localhost:9600/metrics").content
 	for family in text_string_to_metric_families(metrics):
 		for sample in family.samples:
-			if (sample[0]=="zeebe_running_workflow_instances_total"):
+			if (sample[0]==metricName):
 				runningWorkflows = sample[2]
-#				print ("Running workflow instances: " + str(runningWorkflows))
 				return runningWorkflows
 
+
 def waitForWorkflowsToBeFinished():
-	amount = numberOfWorkflowsRunning();
-	while (amount > 0):
-		amount = numberOfWorkflowsRunning();
+	numberOfWorkflowsRunning = 1;
+	while (numberOfWorkflowsRunning > 0):
+		numberOfWorkflowsRunning = getMetricValue("zeebe_running_workflow_instances_total");
+
+def waitForJobsToBeFinished():
+	numberOfJobsPending = 1;
+	while (numberOfJobsPending > 0):
+		numberOfJobsPending = getMetricValue("zeebe_pending_jobs_total");
 
 number = 1
 payload = "1"
@@ -96,21 +101,24 @@ print( "## Start Workflow Instances" )
 start = time.clock()
 startWorkflowInstances(number, payload)
 end = time.clock()
-print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' milliseconds' );
+print( "Started "+str(number)+" workflow instances: " + str((end - start) * 10000) + ' seconds' );
 
 
 print( "## Start Kafka Connect Source" )
-start = time.clock()
 startKafkaConnectSource()
+
+print( "## Wait for all jobs in Zeebe to be processed" )
+start = time.clock()
+waitForJobsToBeFinished()
 end = time.clock()
-print( "Started Source: " + str((end - start) * 10000) + ' milliseconds' );
+print( "Jobs processed: " + str((end - start) * 10000) + ' seconds' );
 
 
 print( "## Start Kafka Consumer to Check for Messages" )
 start = time.clock()
 waitForRecordsToArrive(number)
 end = time.clock()
-print( str(number) + " records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
+print( "Records arrived on topic 'pong' in Kafka: " + str((end - start) * 10000) + ' milliseconds' );
 
 
 print( "## Stop Kafka Connect Source" )
@@ -118,14 +126,14 @@ deleteKafkaConnectSource()
 
 
 print( "## Start Kafka Connect Sink" )
-start = time.clock()
 startKafkaConnectSink()
-end = time.clock()
-print( "Started Sink: " + str((end - start) * 10000) + ' milliseconds' );
 
 
 print( "## Wait for workflows to be finished" )
+start = time.clock()
 waitForWorkflowsToBeFinished()
+end = time.clock()
+print( "Workflows finished: " + str((end - start) * 10000) + ' seconds' );
 
 
 print( "## Stop Kafka Connect Sink" )
