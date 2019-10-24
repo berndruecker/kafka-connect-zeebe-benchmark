@@ -98,6 +98,8 @@ def waitForJobsToBeFinished():
 number = 1
 payload = "1"
 
+print( "####### Number of instances: " + str(number) + ", payload: " + payload)
+
 print( "## Start Workflow Instances ")
 print(timeit.timeit("startWorkflowInstances(number, payload)"))
 
