@@ -5,7 +5,7 @@ import time
 import uuid 
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
-from elasticsearch import Elasticsearch
+from prometheus_client.parser import text_string_to_metric_families
 
 def startWorkflowInstances(numberOfInstances, payload):
 	file = open('payloads/payload-'+payload+'.json', 'r')
@@ -70,25 +70,20 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 		c.close()
 		print("Received "+ str(amount) + " records on Kafka")
 
-def numberOfWorkflowsFinished():
-	es = Elasticsearch()
-	res = es.count(
-		index="zeebe-record-workflow-instance",
-		body="intent:\"ELEMENT_COMPLETED\" AND value.bpmnElementType:\"PROCESS\")")
-	completedAmount = res['count']
-
-	res = es.count(
-		index="zeebe-record-workflow-instance",
-		body="intent:\"ELEMENT_ACTIVATING\" AND value.bpmnElementType:\"PROCESS\")")
-	startedAmount = res['count']
-	
-	runningAmount = startedAmount - completedAmount;
-	print("Started " + str(startedAmount) + " and completed " + completedAmount + " workflow instances = " + runningAmount)
+def numberOfWorkflowsRunning():
+	metrics = requests.get("http://localhost:9600/metrics").content
+	for family in text_string_to_metric_families(metrics):
+		for sample in family.samples:
+			if (sample[0]=="zeebe_running_workflow_instances_total"):
+				runningWorkflows = sample[2]
+				print ("Running: " + str(runningWorkflows))
+				return runningWorkflows
+			#print("Name: {0} Labels: {1} Value: {2}".format(*sample))
 
 def waitForWorkflowsToBeFinished():
-	amount = numberOfWorkflowsFinished();
+	amount = numberOfWorkflowsRunning();
 	while (number > 0):
-		amount = numberOfWorkflowsFinished();
+		amount = numberOfWorkflowsRunning();
 
 number = 1
 payload = "1"
