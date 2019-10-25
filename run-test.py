@@ -25,7 +25,7 @@ def startWorkflowInstances(numberOfInstances, payload):
 				version = -1, 
 				variables = payload.replace('RANDOM', str(uuid.uuid1()))))
 
-	print("Started workflows instances: " + timedelta(seconds=timer()-start))
+	print("Started workflows instances: " + str(timedelta(seconds=timer()-start)))
 
 def startKafkaConnectSource():
 	contents = open('source.json', 'rb').read()
@@ -85,7 +85,7 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 	finally:
 		c.close()
-		print("Received "+ str(amount) + " records on Kafka: " + timedelta(seconds=timer()-start))
+		print("Received "+ str(amount) + " records on Kafka: " + str(timedelta(seconds=timer()-start)))
 
 
 def getMetricValue(metricName):
@@ -103,7 +103,7 @@ def waitForWorkflowsToBeFinished():
 	numberOfWorkflowsRunning = 1;
 	while (numberOfWorkflowsRunning > 0):
 		numberOfWorkflowsRunning = getMetricValue("zeebe_running_workflow_instances_total");
-	print("Workflows finished: " + timedelta(seconds=timer()-start))
+	print("Workflows finished: " + str(timedelta(seconds=timer()-start)))
 
 def waitForJobsToBeFinished():
 	print( "## Wait for all jobs in Zeebe to be processed" )
@@ -111,7 +111,7 @@ def waitForJobsToBeFinished():
 	numberOfJobsPending = 1;
 	while (numberOfJobsPending > 0):
 		numberOfJobsPending = getMetricValue("zeebe_pending_jobs_total");
-	print("Jobs Finished: " + timedelta(seconds=timer()-start))		
+	print("Jobs Finished: " + str(timedelta(seconds=timer()-start)))
 
 
 
