@@ -114,28 +114,6 @@ def waitForJobsToBeFinished():
 	print("Jobs Finished: " + str(timedelta(seconds=timer()-start)))
 
 
-def numberOfWorkflowsUnfinishedInOperate():
-	es = Elasticsearch()
-	res = es.count(
-		index="zeebe-record-workflow-instance",
-		body={"query": {
-			        "bool": {
-			            "must_not": [
-			                {"exists": {"field": "endDate"}}
-			            ]
-			        }
-			  	}
-			  })
-	return res['count']
-
-def waitForWorkflowsToBeMarkedFinishedInOperate():
-	print( "## Wait for workflows to be finished" )
-	start = timer()
-
-	amount = 1;
-	while (number > 0):
-		amount = numberOfWorkflowsUnfinishedInOperate();
-	print("All workflows also marked as finished in operate too, addtional time: " + str(timedelta(seconds=timer()-start)))
 
 
 if (len(sys.argv)==3):
@@ -162,5 +140,3 @@ deleteKafkaConnectSource()
 startKafkaConnectSink()
 waitForWorkflowsToBeFinished()
 deleteKafkaConnectSink()
-
-waitForWorkflowsToBeMarkedFinishedInOperate()
