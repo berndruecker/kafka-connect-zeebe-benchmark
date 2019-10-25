@@ -1,0 +1,20 @@
+####### Starting with number of instances: 25000, payload: 1
+Kafka Connect delete response: <Response [404]>
+Kafka Connect delete response: <Response [404]>
+## Start Workflow Instances
+0:01:55.482043
+## Start Kafka Connect Source
+Kafka Connect response: <Response [201]>
+## Wait for all jobs in Zeebe to be processed
+0:03:56.647755
+## Start Kafka Consumer to Check for Messages
+Received 36765 records on Kafka
+0:00:06.358765
+## Stop Kafka Connect Source
+Kafka Connect delete response: <Response [204]>
+## Start Kafka Connect Sink
+Kafka Connect response: <Response [201]>
+## Wait for workflows to be finished
+0:05:46.657574
+## Stop Kafka Connect Sink
+Kafka Connect delete response: <Response [204]>

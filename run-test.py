@@ -122,13 +122,13 @@ else:
 	number = 1
 	payload = "1"
 
+print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
+
 # Cleanup (to make sure it is not running)
 deleteKafkaConnectSource()
 deleteKafkaConnectSink()
 
 # Run test scenario
-print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
-
 startWorkflowInstances(number, payload)
 
 startKafkaConnectSource()

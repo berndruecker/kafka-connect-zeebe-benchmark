@@ -1,39 +1,48 @@
+# The kafka-connect-zeebe Benchmark
 
+This project runs a simple benchmark on https://github.com/zeebe-io/kafka-connect-zeebe to check thorughput for different test scenarios.
 
-# Start Zeebe and Kafka via Docker Compose
+The workflow sample is based https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples/ping-pong
 
-See also https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples
+# Setup
 
-This project contains a Docker Compose file to startup a nice set of tools for playing around:
+## Run locally via Docker Compose
 
 ```shell
 cd docker
 docker-compose up
 ```
 
-will start:
+I personally run this on a Google Compute Engine (*n1-standard-8 (8 vCPUs, 30 GB memory)* and then connect via SSH with port forwarding:
+
+```
+ssh -L 9200:localhost:9200 -L 8080:localhost:8080 -L 9021:localhost:9021 -L 8083:localhost:8083 -i ~/gke_key bernd_ruecker_camunda_com@34.89.200.201
+```
+
+Docker compose will start:
 
 - [Zeebe](https://zeebe.io), on port `26500` for the client, and port `9600` for monitoring.
     - To check if your Zeebe instance is ready, you can check [http://localhost:9600/ready](http://localhost:9600/ready), 
       which will return a `204` response if ready.
 - [Kafka](https://kafka.apache.org/), on port `9092`.
     - [Zookeeper](https://zookeeper.apache.org/), on port `2081`.
-- [Kafka Schema Registry](https://docs.confluent.io/current/schema-registry/index.html), on port `8081`.
 - [Kafka Connect](https://docs.confluent.io/current/connect/index.html), on port `8083`.
 - Monitoring tools
     - [Operate](https://github.com/zeebe-io/zeebe/releases/tag/0.20.0), a [monitoring tool for Zeebe](https://zeebe.io/blog/2019/04/announcing-operate-visibility-and-problem-solving/), on port `8080`.
         - Operate has an external dependency on [Elasticsearch](https://www.elastic.co/), which we'll also run on port `9200`.
     - [Confluent Control Center](https://www.confluent.io/confluent-control-center/), on port `9021`. This will be our tool to monitor the Kafka cluster, create connectors, visualize Kafka topics, etc.
 
-Of course you can customize the Docker Compose file to your needs. This Docker Compose file is also just based on the examples provided by Zeebe and Confluent:
+This Docker Compose file is based on the examples provided by Zeebe and Confluent:
 
 - [Zeebe Docker Compose](https://github.com/zeebe-io/zeebe-docker-compose)
 - [CP Docker Images](https://github.com/zeebe-io/zeebe-docker-compose)
 
+## Run on Kubernetes / GCP
 
-# Run Ping Pong Example
+See [kubernetes/README.md](kubernetes/README.md)
 
-See https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples/ping-pong
+# Run the benchmark
+
 
 ## Deploy workflow 
 
@@ -41,19 +50,15 @@ See https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples/ping-po
 zbctl --insecure deploy process.bpmn
 ```
 
-## Use Test script
+## Run test script
+
+This python script does the whole test driving:
 
 ```
 python run-tests.py
 ```
 
-This:
-
-* Starts workflows
-* Starts the Source Connector
-* Wait for all messages to arrive in the Kafka Topic
-
-You need this to be installed first:
+In order to run it you need to install python and:
 
 ```
 pip install zeebe-grpc
@@ -62,10 +67,14 @@ pip install elasticsearch
 pip install prometheus_client
 ```
 
-I run this on a Google Compute Engine - reminder for me:
-```
-ssh -L 9200:localhost:9200 -L 8080:localhost:8080 -L 9021:localhost:9021 -L 8083:localhost:8083 -i ~/gke_key bernd_ruecker_camunda_com@34.89.200.201
-```
+The test script
+
+* Start workflow instances
+* Start Kafka Connect Source so that records are written to Kafka, and then stop it again
+* Start Kafka Connect Sink so that records are correlated back to Zeebe
+* Wait for all workflows to be completly finished
+
+It will print the durations of the different tasks.
 
 
 ## Test cases & Payloads

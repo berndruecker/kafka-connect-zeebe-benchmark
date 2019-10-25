@@ -45,23 +45,18 @@ Adjust the parameters in `helm-values-zeebe.yaml` and then
 ```
 helm repo add zeebe https://helm.zeebe.io
 helm repo update
-helm install -f helm-values-zeebe.yaml --name zeebe zeebe/zeebe-full
+helm install -f helm-values-zeebe.yaml --name zeebe zeebe/zeebe-cluster
 ```
 
-## Start the test
-
-Forward ports
+And if you want to have Operate as well
 
 ```
-kubectl port-forward svc/zeebe2-zeebe-cluster 26500:26500 & kubectl port-forward svc/kafka-cp-kafka-connect 8083:8083 & kubectl port-forward svc/kafka-cp-kafka 9092:9092 & kubectl port-forward svc/kafka-cp-control-center 9021:9021 &
+helm install --name zeebe-operate zeebe/zeebe-operate --set global.zeebe=zeebe
 ```
 
-Deploy workflow model
-```
-zbctl --insecure deploy process.bpmn
-```
+## Forward ports
 
-Run whole test
+
 ```
-python run-test.py
+kubectl port-forward svc/zeebe-zeebe-cluster 26500:26500 & kubectl port-forward svc/kafka-cp-kafka-connect 8083:8083 & kubectl port-forward svc/kafka-cp-kafka 9092:9092 & kubectl port-forward svc/kafka-cp-control-center 9021:9021 & kubectl port-forward svc/zeebe-operate 8080:8080
 ```
