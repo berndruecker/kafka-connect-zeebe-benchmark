@@ -12,6 +12,9 @@ from prometheus_client.parser import text_string_to_metric_families
 
 
 def startWorkflowInstances(numberOfInstances, payload):
+	print( "## Start Workflow Instances ")
+	start = timer()
+
 	file = open('payloads/payload-'+payload+'.json', 'r')
 	payload = file.read()
 	with grpc.insecure_channel("localhost:26500") as channel:
@@ -22,27 +25,32 @@ def startWorkflowInstances(numberOfInstances, payload):
 				version = -1, 
 				variables = payload.replace('RANDOM', str(uuid.uuid1()))))
 
+	print("Started workflows instances: " + timedelta(seconds=timer()-start))
+
 def startKafkaConnectSource():
 	contents = open('source.json', 'rb').read()
 	headers = {'Content-type': 'application/json'}
 	response = requests.post('http://localhost:8083/connectors', data=contents, headers=headers)
-	print "Kafka Connect response: " + str( response )
+	print( "## Started Kafka Connect Source with response: " + str( response ))
 
 def deleteKafkaConnectSource():
 	response = requests.delete('http://localhost:8083/connectors/ping')
-	print "Kafka Connect delete response: " + str( response )
+	print( "## Deleted Kafka Connect Source with response: " + str( response ))
 
 def startKafkaConnectSink():
 	contents = open('sink.json', 'rb').read()
 	headers = {'Content-type': 'application/json'}
 	response = requests.post('http://localhost:8083/connectors', data=contents, headers=headers)
-	print "Kafka Connect response: " + str( response )
+	print( "## Started Kafka Connect Sink with response: " + str( response ))
 
 def deleteKafkaConnectSink():
 	response = requests.delete('http://localhost:8083/connectors/pong')
-	print "Kafka Connect delete response: " + str( response )
+	print( "## Deleted Kafka Connect Sink with response: " + str( response ))
 
 def waitForRecordsToArrive(numberOfEpectedMessages):
+	print( "## Start Kafka Consumer to Check for Messages" )
+
+	start = timer()
 	amount = 0
 	settings = {
 		'bootstrap.servers': 'localhost:9092',
@@ -77,7 +85,8 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 	finally:
 		c.close()
-		print("Received "+ str(amount) + " records on Kafka")
+		print("Received "+ str(amount) + " records on Kafka: " + timedelta(seconds=timer()-start))
+
 
 def getMetricValue(metricName):
 	metrics = requests.get("http://localhost:9600/metrics").content
@@ -89,14 +98,22 @@ def getMetricValue(metricName):
 
 
 def waitForWorkflowsToBeFinished():
+	print( "## Wait for workflows to be finished" )
+	start = timer()
 	numberOfWorkflowsRunning = 1;
 	while (numberOfWorkflowsRunning > 0):
 		numberOfWorkflowsRunning = getMetricValue("zeebe_running_workflow_instances_total");
+	print("Workflows finished: " + timedelta(seconds=timer()-start))
 
 def waitForJobsToBeFinished():
+	print( "## Wait for all jobs in Zeebe to be processed" )
+	start = timer()	
 	numberOfJobsPending = 1;
 	while (numberOfJobsPending > 0):
 		numberOfJobsPending = getMetricValue("zeebe_pending_jobs_total");
+	print("Jobs Finished: " + timedelta(seconds=timer()-start))		
+
+
 
 if (len(sys.argv)==3):
 	number = int(sys.argv[1])
@@ -105,39 +122,20 @@ else:
 	number = 1
 	payload = "1"
 
-print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
 # Cleanup (to make sure it is not running)
 deleteKafkaConnectSource()
 deleteKafkaConnectSink()
 
-print( "## Start Workflow Instances ")
-start = timer()
+# Run test scenario
+print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
+
 startWorkflowInstances(number, payload)
-print(timedelta(seconds=timer()-start))
 
-print( "## Start Kafka Connect Source" )
 startKafkaConnectSource()
-
-print( "## Wait for all jobs in Zeebe to be processed" )
-start = timer()
 waitForJobsToBeFinished()
-print(timedelta(seconds=timer()-start))
-
-print( "## Start Kafka Consumer to Check for Messages" )
-start = timer()
 waitForRecordsToArrive(number)
-print(timedelta(seconds=timer()-start))
-
-print( "## Stop Kafka Connect Source" )
 deleteKafkaConnectSource()
 
-print( "## Start Kafka Connect Sink" )
 startKafkaConnectSink()
-
-print( "## Wait for workflows to be finished" )
-start = timer()
 waitForWorkflowsToBeFinished()
-print(timedelta(seconds=timer()-start))
-
-print( "## Stop Kafka Connect Sink" )
 deleteKafkaConnectSink()
