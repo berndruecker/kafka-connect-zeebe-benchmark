@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   zeebe:
-    image: camunda/zeebe:0.20.0
+    image: camunda/zeebe:0.21.1
     hostname: zeebe
     ports:
       - "26500:26500"
@@ -11,7 +11,7 @@ services:
       - ./zeebe.cfg.toml:/usr/local/zeebe/conf/zeebe.cfg.toml
 
   operate:
-    image: camunda/operate:1.0.0
+    image: camunda/operate:1.1.0
     ports:
       - "8080:8080"
     volumes:
