@@ -3,7 +3,7 @@
     "messageName": "pong",
     "someData": "12345678",
     "moreData": "42",
-    "andMore": [
+    "andMore1": [
   {
     "_id": "5db14ca71527fca101d22af3",
     "index": 0,
@@ -687,7 +687,9 @@
     ],
     "greeting": "Hello, Galloway! You have 9 unread messages.",
     "favoriteFruit": "banana"
-  },
+  }
+],
+"andMore2": [
   {
     "_id": "5db14ca78589d8e52c7458a0",
     "index": 3,

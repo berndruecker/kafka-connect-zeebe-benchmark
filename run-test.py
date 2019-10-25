@@ -9,7 +9,7 @@ from datetime import timedelta
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
 from prometheus_client.parser import text_string_to_metric_families
-
+from elasticsearch import Elasticsearch
 
 def startWorkflowInstances(numberOfInstances, payload):
 	print( "## Start Workflow Instances ")
@@ -114,6 +114,29 @@ def waitForJobsToBeFinished():
 	print("Jobs Finished: " + str(timedelta(seconds=timer()-start)))
 
 
+def numberOfWorkflowsUnfinishedInOperate():
+	es = Elasticsearch()
+	res = es.count(
+		index="zeebe-record-workflow-instance",
+		body={"query": {
+			        "bool": {
+			            "must_not": [
+			                {"exists": {"field": "endDate"}}
+			            ]
+			        }
+			  	}
+			  })
+	return res['count']
+
+def waitForWorkflowsToBeMarkedFinishedInOperate():
+	print( "## Wait for workflows to be finished" )
+	start = timer()
+
+	amount = 1;
+	while (number > 0):
+		amount = numberOfWorkflowsUnfinishedInOperate();
+	print("All workflows also marked as finished in operate too, addtional time: " + str(timedelta(seconds=timer()-start)))
+
 
 if (len(sys.argv)==3):
 	number = int(sys.argv[1])
@@ -139,3 +162,5 @@ deleteKafkaConnectSource()
 startKafkaConnectSink()
 waitForWorkflowsToBeFinished()
 deleteKafkaConnectSink()
+
+waitForWorkflowsToBeMarkedFinishedInOperate()
