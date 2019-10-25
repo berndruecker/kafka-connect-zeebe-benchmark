@@ -1,0 +1,15 @@
+###### Starting with number of instances: 2000, payload: 3
+## Deleted Kafka Connect Source with response: <Response [404]>
+## Deleted Kafka Connect Sink with response: <Response [404]>
+## Start Workflow Instances
+Started workflows instances: 0:00:25.496725
+## Started Kafka Connect Source with response: <Response [201]>
+## Wait for all jobs in Zeebe to be processed
+Jobs Finished: 0:00:40.733429
+## Start Kafka Consumer to Check for Messages
+Received 2000 records on Kafka: 0:00:06.442044
+## Deleted Kafka Connect Source with response: <Response [204]>
+## Started Kafka Connect Sink with response: <Response [201]>
+## Wait for workflows to be finished
+Workflows finished: 0:00:23.342883
+## Deleted Kafka Connect Sink with response: <Response [204]>
