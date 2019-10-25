@@ -4,6 +4,10 @@ This project runs a simple benchmark on https://github.com/zeebe-io/kafka-connec
 
 The workflow sample is based https://github.com/zeebe-io/kafka-connect-zeebe/tree/master/examples/ping-pong
 
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=j019EYpxpPE" target="_blank"><img src="http://img.youtube.com/vi/j019EYpxpPE/0.jpg" alt="Walkthrough" width="240" height="180" border="10" /></a>
+
+
 # Setup
 
 ## Run locally via Docker Compose
