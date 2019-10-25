@@ -8,7 +8,7 @@
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": false,
     "topics": "pong",
-    "zeebe.client.broker.contactPoint": "zeebe:26500",
+    "zeebe.client.broker.contactPoint": "zeebe-zeebe-cluster:26500",
     "zeebe.client.requestTimeout": "10000",
     "message.path.messageName": "$.variablesAsMap.messageName",
     "message.path.correlationKey": "$.variablesAsMap.key",

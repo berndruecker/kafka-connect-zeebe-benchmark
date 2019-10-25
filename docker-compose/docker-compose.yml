@@ -3,7 +3,7 @@ version: '2.1'
 services:
   zeebe:
     image: camunda/zeebe:0.20.0
-    hostname: zeebe
+    hostname: zeebe-zeebe-cluster
     ports:
       - "26500:26500"
       - "9600:9600"
