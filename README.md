@@ -56,10 +56,10 @@ zbctl --insecure deploy process.bpmn
 
 ## Run test script
 
-This python script does the whole test driving:
+This python script does the whole test driving (parameters saying 1 instance with payload type 1):
 
 ```
-python run-tests.py
+python run-test.py 1 1
 ```
 
 In order to run it you need to install python and:
