@@ -11,7 +11,7 @@ camunda.operate:
   # Zeebe instance
   zeebe:
     # Broker contact point
-    brokerContactPoint: zeebe:26500
+    brokerContactPoint: zeebe-zeebe:26500
   # ELS instance to export Zeebe data to
   zeebeElasticsearch:
     # Cluster name
