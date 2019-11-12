@@ -125,10 +125,6 @@ services:
       - zeebe-1
     volumes:
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
 
   grafana:
     image: grafana/grafana:latest
@@ -141,7 +137,3 @@ services:
     volumes:
         - ./grafana/provisioning/:/etc/grafana/provisioning/
         - ./grafana/conf/grafana.ini:/etc/grafana/grafana.ini
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
