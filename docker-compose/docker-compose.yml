@@ -1,9 +1,9 @@
 version: '2.1'
 
 services:
-  zeebe-zeebe-cluster:
+  zeebe-zeebe:
     image: camunda/zeebe:0.21.1
-    hostname: zeebe-zeebe-cluster
+    hostname: zeebe-zeebe
     ports:
       - "26500:26500"
       - "9600:9600"
@@ -98,7 +98,7 @@ services:
     depends_on:
       - schema-registry
       - kafka
-      - zeebe-zeebe-cluster
+      - zeebe-zeebe
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:5.3.0
@@ -116,3 +116,32 @@ services:
       - schema-registry
       - kafka
       - connect
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    links:
+      - zeebe-1
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+        - prometheus
+    ports:
+        - "3000:3000"
+    volumes:
+        - ./grafana/provisioning/:/etc/grafana/provisioning/
+        - ./grafana/conf/grafana.ini:/etc/grafana/grafana.ini
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
