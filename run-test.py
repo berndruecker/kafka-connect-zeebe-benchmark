@@ -88,7 +88,7 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 
 def getMetricValue(metricName):
-	json = requests.get("http://localhost:9090/api/v1/query?query=" + metricName).json()
+	json = requests.get("http://localhost:9090/api/v1/query?query=sum(" + metricName + ")").json()
 	return int(json["data"]["result"][0]["value"][1])
 
 def waitForWorkflowsToBeFinished():
