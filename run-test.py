@@ -88,8 +88,8 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 
 def getMetricValue(metricName):
-        json = requests.get("http://localhost:9090/api/v1/query?query=" + metricName).json()
-        return int(json["data"]["result"][0]["value"][1])
+	json = requests.get("http://localhost:9090/api/v1/query?query=" + metricName).json()
+	return int(json["data"]["result"][0]["value"][1])
 
 def waitForWorkflowsToBeFinished():
 	print( "## Wait for workflows to be finished" )
@@ -118,7 +118,7 @@ else:
 	payload = "1"
 
 print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
-print( "####### Keep in mind that Prometheus scraping interval is 1 second, so precision of measurements is rounded up to seconds."
+print( "####### Keep in mind that Prometheus scraping interval is 1 second, so precision of measurements is rounded up to seconds.")
 
 # Cleanup (to make sure it is not running)
 deleteKafkaConnectSource()
