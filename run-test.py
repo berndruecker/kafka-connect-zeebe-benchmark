@@ -8,7 +8,6 @@ from timeit import default_timer as timer
 from datetime import timedelta
 from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
-from prometheus_client.parser import text_string_to_metric_families
 from elasticsearch import Elasticsearch
 
 def startWorkflowInstances(numberOfInstances, payload):
@@ -89,13 +88,8 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 
 def getMetricValue(metricName):
-	metrics = requests.get("http://localhost:9600/metrics").content
-	for family in text_string_to_metric_families(metrics):
-		for sample in family.samples:
-			if (sample[0]==metricName):
-				runningWorkflows = sample[2]
-				return runningWorkflows
-
+        json = requests.get("http://localhost:9090/api/v1/query?query=" + metricName).json()
+        return int(json["data"]["result"][0]["value"][1])
 
 def waitForWorkflowsToBeFinished():
 	print( "## Wait for workflows to be finished" )
@@ -124,6 +118,7 @@ else:
 	payload = "1"
 
 print( "####### Starting with number of instances: " + str(number) + ", payload: " + payload)
+print( "####### Keep in mind that Prometheus scraping interval is 1 second, so precision of measurements is rounded up to seconds."
 
 # Cleanup (to make sure it is not running)
 deleteKafkaConnectSource()
