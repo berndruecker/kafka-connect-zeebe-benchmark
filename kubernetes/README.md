@@ -58,7 +58,7 @@ helm install --name zeebe-operate zeebe/zeebe-operate --set global.zeebe=zeebe-z
 
 
 ```
-kubectl port-forward svc/zeebe-zeebe 26500:26500 9600:9600 & kubectl port-forward svc/kafka-cp-kafka-connect 8083:8083 & kubectl port-forward svc/kafka-cp-kafka 9092:9092 & kubectl port-forward svc/kafka-cp-control-center 9021:9021 & kubectl port-forward svc/zeebe-operate 8080:80 & 
+kubectl port-forward svc/zeebe-zeebe 26500:26500 & kubectl port-forward svc/kafka-cp-kafka-connect 8083:8083 & kubectl port-forward svc/kafka-cp-kafka 9092:9092 & kubectl port-forward svc/kafka-cp-control-center 9021:9021 & kubectl port-forward svc/zeebe-operate 8080:80 & kubectl port-forward svc/metrics-prometheus-operato-prometheus 9090:9090 & 
 ```
 
 ## Run benchmark

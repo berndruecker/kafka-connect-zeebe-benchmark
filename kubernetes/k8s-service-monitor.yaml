@@ -9,8 +9,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: zeebe
+      app: zeebe-zeebe
   endpoints:
       - honorLabels: true
-        port: monitoring
-        interval: 10s
+#        port: monitoring
+        port: http
+        interval: 1s
