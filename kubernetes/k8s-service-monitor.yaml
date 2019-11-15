@@ -9,7 +9,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: zeebe-zeebe
+      app: zeebe
   endpoints:
       - honorLabels: true
 #        port: monitoring
