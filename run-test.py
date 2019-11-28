@@ -10,6 +10,13 @@ from zeebe_grpc import gateway_pb2, gateway_pb2_grpc
 from confluent_kafka import Consumer, KafkaError
 from elasticsearch import Elasticsearch
 
+def startWorkflowInstance(stub, payload):
+	return stub.CreateWorkflowInstance.future(gateway_pb2.CreateWorkflowInstanceRequest(
+			bpmnProcessId='ping-pong',
+			version=-1,
+			variables=payload.replace('RANDOM', str(uuid.uuid1()))))
+
+
 def startWorkflowInstances(numberOfInstances, payload):
 	print( "## Start Workflow Instances ")
 	start = timer()
@@ -18,11 +25,22 @@ def startWorkflowInstances(numberOfInstances, payload):
 	payload = file.read()
 	with grpc.insecure_channel("localhost:26500") as channel:
 		stub = gateway_pb2_grpc.GatewayStub(channel)
-		for i in range(0, numberOfInstances):
-			stub.CreateWorkflowInstance(gateway_pb2.CreateWorkflowInstanceRequest(
-				bpmnProcessId = 'ping-pong', 
-				version = -1, 
-				variables = payload.replace('RANDOM', str(uuid.uuid1()))))
+
+		createdInstances = 0
+		while createdInstances < numberOfInstances:
+			batch = min(numberOfInstances - createdInstances, 100)
+			futures = [startWorkflowInstance(stub, payload) for i in range(0, batch)]
+			for future in futures:
+				try:
+					future.result()
+					createdInstances += 1
+				except grpc.RpcError as e:
+					if e.code() == grpc.StatusCode.RESOURCE_EXHAUSTED:
+					# retry creation in next iteration as it was probably rejected by back pressure
+						pass
+					else:
+						raise e
+
 
 	print("Started workflows instances: " + str(timedelta(seconds=timer()-start)))
 
@@ -93,7 +111,11 @@ def waitForRecordsToArrive(numberOfEpectedMessages):
 
 def getMetricValue(metricName):
 	json = requests.get("http://localhost:9090/api/v1/query?query=sum(" + metricName + ")").json()
-	return int(json["data"]["result"][0]["value"][1])
+	try:
+		return int(json["data"]["result"][0]["value"][1])
+	except:
+		# return 0 if metric does not yet exist
+		return 0
 
 def waitForWorkflowsToBeFinished():
 	print( "## Wait for workflows to be finished" )
